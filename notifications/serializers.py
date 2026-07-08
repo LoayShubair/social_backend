@@ -3,6 +3,15 @@ from .models import Notification
 
 
 class NotificationSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Notification
-        fields = "__all__"
+        fields = [
+            "id",
+            "user",
+            "actor",
+            "post",
+            "notification_type",
+            "is_read",
+            "created_at",
+        ]
