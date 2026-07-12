@@ -29,6 +29,7 @@ urlpatterns = [
     path("", root_redirect),
     path("admin/", admin.site.urls),
     path("api/", include("users.urls")),
+    path("api/notifications/", include("notifications.urls")),
     path("api/token/", TokenObtainPairView.as_view()),
     path("api/token/refresh/", TokenRefreshView.as_view()),
 ]
