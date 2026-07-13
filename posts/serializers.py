@@ -1,12 +1,13 @@
 from rest_framework import serializers
 
+from users.serializers import UserSerializer
 from .models import Post, Like, Comment
 
 
 class PostSerializer(serializers.ModelSerializer):
     likes_count = serializers.IntegerField(read_only=True)
     comments_count = serializers.IntegerField(read_only=True)
-    username = serializers.CharField(source='user.username', read_only=True)
+    user = UserSerializer(read_only=True)
 
     def validate_content(self, content):
         if len(content) < 3:
@@ -16,9 +17,9 @@ class PostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ['id', 'content', 'username', 'created_at', 'likes_count',
+        fields = ['id', 'content', 'user', 'created_at', 'likes_count',
                   'comments', 'comments_count', 'likes']
-        read_only_fields = ['id', 'created_at', 'username', 'likes_count',
+        read_only_fields = ['id', 'created_at', 'user', 'likes_count',
                             'comments', 'comments_count', 'likes']
         depth = 1
 
@@ -31,6 +32,8 @@ class LikeSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+
     class Meta:
         model = Comment
         fields = ['id', 'user', 'post', 'created_at', 'content']
