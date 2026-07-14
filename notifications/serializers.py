@@ -3,6 +3,7 @@ from .models import Notification
 
 
 class NotificationSerializer(serializers.ModelSerializer):
+    post_content = serializers.CharField(source="post.content", read_only=True)
 
     class Meta:
         model = Notification
@@ -11,7 +12,9 @@ class NotificationSerializer(serializers.ModelSerializer):
             "user",
             "actor",
             "post",
+            "post_content",
             "notification_type",
             "is_read",
             "created_at",
         ]
+
