@@ -5,10 +5,11 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
+from notifications.models import Notification
 from posts.models import Post, Like, Comment
 from posts.permissions import IsOwner
 from posts.serializers import PostSerializer, CommentSerializer
-from notifications.models import Notification
+from users.models import Follow
 
 
 class PostViewSet(viewsets.ModelViewSet):
@@ -27,7 +28,19 @@ class PostViewSet(viewsets.ModelViewSet):
         return [permission() for permission in permission_classes]
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        post = serializer.save(user=self.request.user)
+
+        followers = Follow.objects.filter(
+            following=self.request.user
+        ).select_related("follower")
+
+        for follow in followers:
+            Notification.objects.create(
+                user=follow.follower,
+                actor=self.request.user,
+                post=post,
+                notification_type=Notification.NotificationType.POST,
+            )
 
     @action(detail=True, methods=["post", "delete"], url_path="like")
     def like(self, request, pk=None):
