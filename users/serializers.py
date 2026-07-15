@@ -20,9 +20,13 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
+    followers_count = serializers.IntegerField(read_only=True)
+    following_count = serializers.IntegerField(read_only=True)
+    posts_count = serializers.IntegerField(read_only=True)
+
     class Meta:
         model = User
-        fields = ["id", "username"]
+        fields = ["id", "username", "followers_count", "following_count", "posts_count"]
 
 
 class FollowSerializer(serializers.ModelSerializer):

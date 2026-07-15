@@ -18,11 +18,30 @@ class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = ['id', 'content', 'user', 'created_at', 'likes_count',
-                  'comments', 'comments_count', 'likes']
+                  'comments_count']
         read_only_fields = ['id', 'created_at', 'user', 'likes_count',
-                            'comments', 'comments_count', 'likes']
+                            'comments_count']
         depth = 1
 
+
+class PostDetailedSerializer(serializers.ModelSerializer):
+    likes_count = serializers.IntegerField(read_only=True)
+    comments_count = serializers.IntegerField(read_only=True)
+    user = UserSerializer(read_only=True)
+
+    def validate_content(self, content):
+        if len(content) < 3:
+            raise serializers.ValidationError(
+                "Content must be at least 3 characters")
+        return content
+
+    class Meta:
+        model = Post
+        fields = ['id', 'content', 'user', 'created_at', 'comments', 'likes_count',
+                  'comments_count']
+        read_only_fields = ['id', 'created_at', 'user', 'likes_count',
+                            'comments', 'comments_count']
+        depth = 1
 
 class LikeSerializer(serializers.ModelSerializer):
     class Meta:
