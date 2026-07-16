@@ -1,4 +1,4 @@
-# Social Backend API
+# Social Media Backend API
 
 A backend-only social media API built using Django and Django REST Framework (DRF).
 
