@@ -118,7 +118,7 @@ The project uses JWT authentication.
 ### Obtain Token
 
 ```
-POST /api/token/
+POST /token/
 ```
 
 Example request:
@@ -143,7 +143,7 @@ Authorization: Bearer <access_token>
 Register:
 
 ```
-POST /api/register/
+POST /register/
 ```
 
 ### Posts
@@ -178,7 +178,7 @@ POST /posts/{id}/like/
 Remove like:
 
 ```
-DELETE /posts/{id}/like/
+DELETE /posts/{id}/unlike/
 ```
 
 ### Comments
@@ -195,12 +195,24 @@ Create comment:
 POST /comments/?post_id={id}
 ```
 
+Update comment:
+
+```
+PATCH /comments/{id}/
+```
+
+Delete comment:
+
+```
+DELETE /comments/{id}/
+```
+
 ### Follow
 
 Follow a user:
 
 ```
-POST /api/follow/?follow={user_id}
+POST /follow/?follow={user_id}
 ```
 
 ### Notifications
@@ -208,13 +220,13 @@ POST /api/follow/?follow={user_id}
 Get notifications:
 
 ```
-GET /api/notifications/
+GET /notifications/
 ```
 
 Mark notification as read:
 
 ```
-POST /api/notifications/{id}/mark-read/
+POST /notifications/{id}/mark-read/
 ```
 
 ## Testing
