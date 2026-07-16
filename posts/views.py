@@ -48,30 +48,40 @@ class PostViewSet(viewsets.ModelViewSet):
                 notification_type=Notification.NotificationType.POST,
             )
 
-    @action(detail=True, methods=["post", "delete"], url_path="like")
+    @action(detail=True, methods=["post"], url_path="like")
     def like(self, request, pk=None):
         post = self.get_object()
+        like, created = Like.objects.get_or_create(user=request.user, post=post)
 
-        if request.method == "POST":
-            like = Like(user=self.request.user, post=post)
-            like.save()
+        if not created:
+            return Response(
+                {"detail": "You already liked this post."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
-            if post.user != request.user:
-                Notification.objects.create(
-                    user=post.user,
-                    actor=request.user,
-                    post=post,
-                    notification_type=Notification.NotificationType.LIKE,
-                )
+        if post.user != request.user:
+            Notification.objects.create(
+                user=post.user,
+                actor=request.user,
+                post=post,
+                notification_type=Notification.NotificationType.LIKE,
+            )
 
-            return Response(status=status.HTTP_201_CREATED)
+        return Response(status=status.HTTP_201_CREATED)
 
-        elif request.method == "DELETE":
-            Like.objects.filter(post=post, user=request.user).delete()
+    @action(detail=True, methods=["delete"], url_path="unlike")
+    def unlike(self, request, pk=None):
+        post = self.get_object()
+        like = Like.objects.filter(post=post, user=request.user).first()
 
-            return Response(status=status.HTTP_204_NO_CONTENT)
+        if not like:
+            return Response(
+                {"detail": "You have not liked this post."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
-        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        like.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class CommentViewSet(viewsets.ModelViewSet):
