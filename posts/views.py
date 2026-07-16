@@ -8,7 +8,8 @@ from rest_framework.response import Response
 from notifications.models import Notification
 from posts.models import Post, Like, Comment
 from posts.permissions import IsOwner
-from posts.serializers import PostSerializer, CommentSerializer
+from posts.serializers import PostSerializer, CommentSerializer, \
+    PostDetailedSerializer
 from users.models import Follow
 
 
@@ -18,6 +19,11 @@ class PostViewSet(viewsets.ModelViewSet):
         comments_count=Count("comments", distinct=True),
     )
     serializer_class = PostSerializer
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return PostSerializer
+        return PostDetailedSerializer
 
     def get_permissions(self):
         if self.action in ["update", "destroy", "partial_update"]:
@@ -50,7 +56,6 @@ class PostViewSet(viewsets.ModelViewSet):
             like = Like(user=self.request.user, post=post)
             like.save()
 
-            # Create notification for post owner
             if post.user != request.user:
                 Notification.objects.create(
                     user=post.user,
@@ -84,9 +89,8 @@ class CommentViewSet(viewsets.ModelViewSet):
         post_id = self.request.query_params.get("post_id")
         post = get_object_or_404(Post, id=post_id)
 
-        comment = serializer.save(user=self.request.user, post=post)
+        serializer.save(user=self.request.user, post=post)
 
-        # Create notification for post owner
         if post.user != self.request.user:
             Notification.objects.create(
                 user=post.user,

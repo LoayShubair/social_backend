@@ -29,8 +29,8 @@ urlpatterns = [
     path("", root_redirect),
     path("", include("posts.urls")),
     path("admin/", admin.site.urls),
-    path("api/", include("users.urls")),
+    path("", include("users.urls")),
     path("", include("notifications.urls")),
-    path("api/token/", TokenObtainPairView.as_view()),
-    path("api/token/refresh/", TokenRefreshView.as_view()),
+    path("token/", TokenObtainPairView.as_view()),
+    path("token/refresh/", TokenRefreshView.as_view()),
 ]
